@@ -1,3 +1,23 @@
+# Virtual environment
 venv/
+
+# Model weights (large binary, don't commit to git)
+*.pt
+
+# Video files
+*.mp4
+*.avi
+
+# Generated outputs
+data/output_detected.*
+data/alert_log.csv
+data/snapshots/
+data/logs/
+
+# Python cache
 __pycache__/
 *.pyc
+
+# OS files
+.DS_Store
+Thumbs.db
