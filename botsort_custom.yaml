@@ -1,0 +1,16 @@
+tracker_type: botsort
+track_high_thresh: 0.5
+track_low_thresh: 0.1
+new_track_thresh: 0.6
+track_buffer: 90
+match_thresh: 0.8
+fuse_score: True
+
+# BoT-SORT specific
+gmc_method: sparseOptFlow  # camera motion compensation, helps if camera shakes/pans
+
+# Re-ID (appearance matching)
+with_reid: True
+model: auto   # uses a lightweight built-in OSNet Re-ID model — no extra download needed
+proximity_thresh: 0.5
+appearance_thresh: 0.25

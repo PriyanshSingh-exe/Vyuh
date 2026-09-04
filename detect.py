@@ -115,7 +115,7 @@ else:
         run_detection = (frame_count % DETECT_EVERY_N_FRAMES == 0) or frame_count == 1
 
         if run_detection:
-            results = model.track(frame, persist=True, tracker="bytetrack.yaml",
+            results = model.track(frame, persist=True, tracker="botsort_custom.yaml",
                                    verbose=False, imgsz=640, device=DEVICE)
             last_boxes = results[0].boxes
 
