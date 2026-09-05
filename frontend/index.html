@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VYUH — Intrusion Detection</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Top Navigation -->
+    <header class="topbar">
+        <div>
+            <h1>
+                <span class="status-dot"></span>
+                VYUH
+            </h1>
+            <p>AI-Based Border Surveillance</p>
+        </div>
+
+        <div class="system-status">
+            <span class="status-indicator"></span>
+            SYSTEM ONLINE
+        </div>
+    </header>
+
+
+    <!-- Main Dashboard -->
+    <main class="dashboard">
+
+        <!-- Video Section -->
+        <section class="video-section">
+
+            <div class="section-header">
+                <div>
+                    <h2>Processed Surveillance Feed</h2>
+                    <p>AI-annotated CCTV footage</p>
+                </div>
+
+                <span class="badge">ANALYZED</span>
+            </div>
+
+            <div class="video-container">
+                <video id="mainVideo" controls>
+                    <source
+                        src="https://ovpvsooxntcmrzarvwie.supabase.co/storage/v1/object/public/VYUH-%20Assets/output_detected%20(8).mp4"
+                        type="video/mp4"
+                    >
+
+                    Your browser does not support video playback.
+                </video>
+            </div>
+
+        </section>
+
+
+        <!-- Statistics -->
+        <section class="stats-grid">
+
+            <div class="stat-card">
+                <span class="stat-label">TOTAL ALERTS</span>
+                <strong id="totalAlerts">—</strong>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-label">UNIQUE OBJECTS</span>
+                <strong id="uniqueObjects">—</strong>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-label">OBJECT CLASSES</span>
+                <strong id="objectClasses">—</strong>
+            </div>
+
+        </section>
+
+
+        <!-- Two-column area -->
+        <section class="content-grid">
+
+            <!-- Activity Timeline -->
+            <div class="panel">
+
+                <div class="panel-header">
+                    <div>
+                        <h2>Activity Timeline</h2>
+                        <p>Detected events from the surveillance feed</p>
+                    </div>
+                </div>
+
+                <div id="timeline" class="timeline">
+                    <div class="loading">
+                        Loading activity log...
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- Detection Summary -->
+            <div class="panel">
+
+                <div class="panel-header">
+                    <div>
+                        <h2>Detection Summary</h2>
+                        <p>Breakdown of detected objects</p>
+                    </div>
+                </div>
+
+                <div id="summary" class="summary">
+                    <div class="loading">
+                        Loading summary...
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Snapshots -->
+        <section class="panel snapshots-panel">
+
+            <div class="panel-header">
+
+                <div>
+                    <h2>Snapshot Evidence</h2>
+                    <p>Captured evidence from detected events</p>
+                </div>
+
+                <span id="snapshotCount" class="badge">0 SNAPSHOTS</span>
+
+            </div>
+
+            <div id="snapshots" class="snapshot-grid">
+
+                <div class="loading">
+                    Loading snapshots...
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- Image Lightbox -->
+    <div id="lightbox" class="lightbox">
+
+        <button id="closeLightbox" class="close-button">
+            ×
+        </button>
+
+        <img id="lightboxImage" src="" alt="Detection snapshot">
+
+        <div id="lightboxCaption" class="lightbox-caption"></div>
+
+        <button id="jumpToVideo" class="jump-button">
+            Jump to this moment
+        </button>
+
+    </div>
+
+
+    <script src="app.js"></script>
+
+</body>
+</html>
