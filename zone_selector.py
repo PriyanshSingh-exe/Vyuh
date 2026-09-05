@@ -72,7 +72,18 @@ def select_zone(video_path, save_path="data/zone.json", display_size=(1280, 960)
         elif event == cv2.EVENT_RBUTTONDOWN:
             undo_last_point()
 
-    cv2.namedWindow("Set Restricted Zone")
+    # WINDOW_NORMAL makes the window resizable/movable instead of locking it
+    # to the frame's raw pixel size, which was pushing part of the image
+    # off-screen on smaller monitors. We then size it to fit comfortably
+    # within a typical screen while preserving the frame's aspect ratio.
+    cv2.namedWindow("Set Restricted Zone", cv2.WINDOW_NORMAL)
+
+    max_win_w, max_win_h = 1200, 800
+    frame_w, frame_h = display_size
+    scale = min(max_win_w / frame_w, max_win_h / frame_h, 1.0)
+    win_w, win_h = int(frame_w * scale), int(frame_h * scale)
+    cv2.resizeWindow("Set Restricted Zone", win_w, win_h)
+
     cv2.setMouseCallback("Set Restricted Zone", mouse_callback)
     redraw()
 
