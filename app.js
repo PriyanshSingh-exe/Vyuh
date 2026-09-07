@@ -5,20 +5,68 @@ const SNAPSHOT_BASE_URL =
     "https://ovpvsooxntcmrzarvwie.supabase.co/storage/v1/object/public/VYUH-%20Assets/snapshots/";
 
 
-const video = document.getElementById("mainVideo");
+// ------------------------------------------------------------
+// Video sources
+// ------------------------------------------------------------
 
-const totalAlertsElement = document.getElementById("totalAlerts");
-const uniqueObjectsElement = document.getElementById("uniqueObjects");
-const objectClassesElement = document.getElementById("objectClasses");
+const RAW_VIDEO_URL =
+    "test1.mp4";
 
-const timelineElement = document.getElementById("timeline");
-const summaryElement = document.getElementById("summary");
-const snapshotsElement = document.getElementById("snapshots");
-const snapshotCountElement = document.getElementById("snapshotCount");
+const AI_VIDEO_URL =
+    "https://ovpvsooxntcmrzarvwie.supabase.co/storage/v1/object/public/VYUH-%20Assets/output_detected%20(8).mp4";
 
-const lightbox = document.getElementById("lightbox");
-const lightboxImage = document.getElementById("lightboxImage");
-const lightboxCaption = document.getElementById("lightboxCaption");
+
+// ------------------------------------------------------------
+// DOM elements
+// ------------------------------------------------------------
+
+const video =
+    document.getElementById("mainVideo");
+
+const rawBtn =
+    document.getElementById("rawBtn");
+
+const aiBtn =
+    document.getElementById("aiBtn");
+
+const videoTitle =
+    document.getElementById("videoTitle");
+
+const videoSubtitle =
+    document.getElementById("videoSubtitle");
+
+const videoBadge =
+    document.getElementById("videoBadge");
+
+const totalAlertsElement =
+    document.getElementById("totalAlerts");
+
+const uniqueObjectsElement =
+    document.getElementById("uniqueObjects");
+
+const objectClassesElement =
+    document.getElementById("objectClasses");
+
+const timelineElement =
+    document.getElementById("timeline");
+
+const summaryElement =
+    document.getElementById("summary");
+
+const snapshotsElement =
+    document.getElementById("snapshots");
+
+const snapshotCountElement =
+    document.getElementById("snapshotCount");
+
+const lightbox =
+    document.getElementById("lightbox");
+
+const lightboxImage =
+    document.getElementById("lightboxImage");
+
+const lightboxCaption =
+    document.getElementById("lightboxCaption");
 
 const closeLightboxButton =
     document.getElementById("closeLightbox");
@@ -31,33 +79,160 @@ let currentSnapshotTimestamp = 0;
 
 
 // ------------------------------------------------------------
+// Video switching
+// ------------------------------------------------------------
+
+function switchVideo(source, mode, targetTime = null) {
+
+    const shouldSeek =
+        targetTime !== null;
+
+    const wasPlaying =
+        !video.paused && !video.ended;
+
+    const currentTime =
+        targetTime !== null
+            ? Number(targetTime)
+            : (video.currentTime || 0);
+
+
+    video.src = source;
+
+    video.load();
+
+
+    video.addEventListener(
+        "loadedmetadata",
+        function handleVideoLoaded() {
+
+            if (
+                Number.isFinite(currentTime) &&
+                video.duration
+            ) {
+                video.currentTime =
+                    Math.min(
+                        currentTime,
+                        video.duration
+                    );
+            }
+
+
+            // When explicitly jumping to a timestamp,
+            // ALWAYS keep the video paused.
+            if (shouldSeek) {
+
+                video.pause();
+
+            } else if (wasPlaying) {
+
+                video.play().catch(() => {});
+            }
+
+        },
+        { once: true }
+    );
+
+
+    // Update UI
+    if (mode === "raw") {
+
+        rawBtn.classList.add("active");
+        aiBtn.classList.remove("active");
+
+        videoTitle.textContent =
+            "Raw Surveillance Feed";
+
+        videoSubtitle.textContent =
+            "Original CCTV footage";
+
+        videoBadge.textContent =
+            "RAW";
+
+    } else {
+
+        aiBtn.classList.add("active");
+        rawBtn.classList.remove("active");
+
+        videoTitle.textContent =
+            "Processed Surveillance Feed";
+
+        videoSubtitle.textContent =
+            "AI-annotated CCTV footage";
+
+        videoBadge.textContent =
+            "ANALYZED";
+    }
+}
+
+
+// ------------------------------------------------------------
+// Raw footage button
+// ------------------------------------------------------------
+
+rawBtn.addEventListener(
+    "click",
+    () => {
+
+        switchVideo(
+            RAW_VIDEO_URL,
+            "raw"
+        );
+    }
+);
+
+
+// ------------------------------------------------------------
+// AI detection button
+// ------------------------------------------------------------
+
+aiBtn.addEventListener(
+    "click",
+    () => {
+
+        switchVideo(
+            AI_VIDEO_URL,
+            "ai"
+        );
+    }
+);
+
+
+// ------------------------------------------------------------
 // CSV parser
 // ------------------------------------------------------------
 
 function parseCSV(text) {
 
-    const lines = text
-        .trim()
-        .split(/\r?\n/);
+    const lines =
+        text
+            .trim()
+            .split(/\r?\n/);
 
     if (lines.length < 2) {
         return [];
     }
 
-    const headers = parseCSVLine(lines[0]);
+
+    const headers =
+        parseCSVLine(lines[0]);
+
 
     return lines
         .slice(1)
         .map(line => {
 
-            const values = parseCSVLine(line);
+            const values =
+                parseCSVLine(line);
 
             const row = {};
 
-            headers.forEach((header, index) => {
-                row[header.trim()] =
-                    values[index]?.trim() ?? "";
-            });
+            headers.forEach(
+                (header, index) => {
+
+                    row[header.trim()] =
+                        values[index]?.trim() ?? "";
+                }
+            );
 
             return row;
         });
@@ -71,9 +246,16 @@ function parseCSVLine(line) {
     let current = "";
     let insideQuotes = false;
 
-    for (let i = 0; i < line.length; i++) {
 
-        const char = line[i];
+    for (
+        let i = 0;
+        i < line.length;
+        i++
+    ) {
+
+        const char =
+            line[i];
+
 
         if (char === '"') {
 
@@ -81,11 +263,17 @@ function parseCSVLine(line) {
                 insideQuotes &&
                 line[i + 1] === '"'
             ) {
+
                 current += '"';
+
                 i++;
+
             } else {
-                insideQuotes = !insideQuotes;
+
+                insideQuotes =
+                    !insideQuotes;
             }
+
 
         } else if (
             char === "," &&
@@ -93,13 +281,16 @@ function parseCSVLine(line) {
         ) {
 
             result.push(current);
+
             current = "";
+
 
         } else {
 
             current += char;
         }
     }
+
 
     result.push(current);
 
@@ -118,17 +309,22 @@ async function loadActivityLog() {
         const response =
             await fetch(LOG_URL);
 
+
         if (!response.ok) {
+
             throw new Error(
                 `HTTP ${response.status}`
             );
         }
 
+
         const csvText =
             await response.text();
 
+
         const rows =
             parseCSV(csvText);
+
 
         renderStatistics(rows);
 
@@ -138,6 +334,7 @@ async function loadActivityLog() {
 
         renderSnapshots(rows);
 
+
     } catch (error) {
 
         console.error(
@@ -145,15 +342,18 @@ async function loadActivityLog() {
             error
         );
 
+
         timelineElement.innerHTML =
             `<div class="loading">
                 Failed to load activity log.
             </div>`;
 
+
         summaryElement.innerHTML =
             `<div class="loading">
                 Failed to load detection summary.
             </div>`;
+
 
         snapshotsElement.innerHTML =
             `<div class="loading">
@@ -172,15 +372,18 @@ function renderStatistics(rows) {
     const totalAlerts =
         rows.length;
 
+
     const uniqueTrackIds =
         new Set(
             rows
                 .map(row => row.track_id)
-                .filter(id =>
-                    id &&
-                    id !== "-1"
+                .filter(
+                    id =>
+                        id &&
+                        id !== "-1"
                 )
         );
+
 
     const uniqueLabels =
         new Set(
@@ -189,11 +392,14 @@ function renderStatistics(rows) {
                 .filter(Boolean)
         );
 
+
     totalAlertsElement.textContent =
         totalAlerts;
 
+
     uniqueObjectsElement.textContent =
         uniqueTrackIds.size;
+
 
     objectClassesElement.textContent =
         uniqueLabels.size;
@@ -216,12 +422,14 @@ function renderTimeline(rows) {
         return;
     }
 
+
     const sortedRows =
         [...rows].sort(
             (a, b) =>
                 Number(a.timestamp_sec) -
                 Number(b.timestamp_sec)
         );
+
 
     timelineElement.innerHTML =
         sortedRows
@@ -230,17 +438,22 @@ function renderTimeline(rows) {
                 const timestamp =
                     Number(row.timestamp_sec) || 0;
 
+
                 const label =
                     escapeHTML(row.label);
+
 
                 const event =
                     escapeHTML(row.event);
 
+
                 const trackId =
                     escapeHTML(row.track_id);
 
+
                 const frame =
                     escapeHTML(row.frame);
+
 
                 return `
                     <div
@@ -291,16 +504,20 @@ function renderSummary(rows) {
         return;
     }
 
+
     const counts = {};
+
 
     rows.forEach(row => {
 
         const label =
             row.label || "unknown";
 
+
         counts[label] =
             (counts[label] || 0) + 1;
     });
+
 
     const sorted =
         Object.entries(counts)
@@ -309,25 +526,27 @@ function renderSummary(rows) {
                     b[1] - a[1]
             );
 
+
     summaryElement.innerHTML =
         sorted
-            .map(([label, count]) => {
+            .map(
+                ([label, count]) => {
 
-                return `
-                    <div class="summary-row">
+                    return `
+                        <div class="summary-row">
 
-                        <span>
-                            ${escapeHTML(label)}
-                        </span>
+                            <span>
+                                ${escapeHTML(label)}
+                            </span>
 
-                        <span>
-                            ${count}
-                        </span>
+                            <span>
+                                ${count}
+                            </span>
 
-                    </div>
-                `;
-
-            })
+                        </div>
+                    `;
+                }
+            )
             .join("");
 }
 
@@ -345,8 +564,10 @@ function renderSnapshots(rows) {
                 row.snapshot_file.trim() !== ""
         );
 
+
     snapshotCountElement.textContent =
         `${snapshotRows.length} SNAPSHOTS`;
+
 
     if (!snapshotRows.length) {
 
@@ -358,6 +579,7 @@ function renderSnapshots(rows) {
         return;
     }
 
+
     snapshotsElement.innerHTML =
         snapshotRows
             .map(row => {
@@ -365,24 +587,23 @@ function renderSnapshots(rows) {
                 const timestamp =
                     Number(row.timestamp_sec) || 0;
 
+
                 const filename =
                     row.snapshot_file.trim();
+
 
                 const imageURL =
                     SNAPSHOT_BASE_URL +
                     encodeURIComponent(filename);
+
 
                 return `
                     <div
                         class="snapshot-card"
                         onclick='openSnapshot(
                             ${JSON.stringify(imageURL)},
-                            ${JSON.stringify(
-                                row.label
-                            )},
-                            ${JSON.stringify(
-                                row.event
-                            )},
+                            ${JSON.stringify(row.label)},
+                            ${JSON.stringify(row.event)},
                             ${timestamp}
                         )'
                     >
@@ -397,19 +618,13 @@ function renderSnapshots(rows) {
                         <div class="snapshot-info">
 
                             <div class="snapshot-title">
-                                ${escapeHTML(
-                                    row.label
-                                )}
+                                ${escapeHTML(row.label)}
                             </div>
 
                             <div class="snapshot-meta">
-                                ID ${escapeHTML(
-                                    row.track_id
-                                )}
+                                ID ${escapeHTML(row.track_id)}
                                 ·
-                                ${escapeHTML(
-                                    row.event
-                                )}
+                                ${escapeHTML(row.event)}
                                 ·
                                 ${timestamp.toFixed(1)}s
                             </div>
@@ -429,10 +644,17 @@ function renderSnapshots(rows) {
 
 function seekTo(seconds) {
 
-    video.currentTime =
-        Number(seconds);
+    const targetTime =
+        Number(seconds) || 0;
 
-    video.play().catch(() => {});
+
+    // Detection timestamps belong to the
+    // AI-processed video.
+    switchVideo(
+        AI_VIDEO_URL,
+        "ai",
+        targetTime
+    );
 }
 
 
@@ -450,15 +672,22 @@ function openSnapshot(
     currentSnapshotTimestamp =
         Number(timestamp);
 
+
     lightboxImage.src =
         imageURL;
+
 
     lightboxCaption.textContent =
         `${label} · ${event} · ${currentSnapshotTimestamp.toFixed(1)}s`;
 
+
     lightbox.classList.add("open");
 }
 
+
+// ------------------------------------------------------------
+// Close lightbox
+// ------------------------------------------------------------
 
 function closeLightbox() {
 
@@ -474,18 +703,38 @@ closeLightboxButton.addEventListener(
 );
 
 
+// ------------------------------------------------------------
+// Jump to video
+// ------------------------------------------------------------
+
 jumpToVideoButton.addEventListener(
     "click",
     () => {
 
+        // Close snapshot lightbox first
+        closeLightbox();
+
+
+        // Switch to AI video,
+        // jump to exact timestamp,
+        // keep paused,
+        // then scroll to the video.
         seekTo(
             currentSnapshotTimestamp
         );
 
-        closeLightbox();
+
+        video.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
     }
 );
 
+
+// ------------------------------------------------------------
+// Close lightbox when clicking background
+// ------------------------------------------------------------
 
 lightbox.addEventListener(
     "click",
@@ -494,11 +743,16 @@ lightbox.addEventListener(
         if (
             event.target === lightbox
         ) {
+
             closeLightbox();
         }
     }
 );
 
+
+// ------------------------------------------------------------
+// Escape key
+// ------------------------------------------------------------
 
 document.addEventListener(
     "keydown",
@@ -507,6 +761,7 @@ document.addEventListener(
         if (
             event.key === "Escape"
         ) {
+
             closeLightbox();
         }
     }

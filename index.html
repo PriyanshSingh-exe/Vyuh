@@ -35,22 +35,38 @@
 
             <div class="section-header">
                 <div>
-                    <h2>Processed Surveillance Feed</h2>
-                    <p>AI-annotated CCTV footage</p>
+                    <h2 id="videoTitle">Raw Surveillance Feed</h2>
+                    <p id="videoSubtitle">Original CCTV footage</p>
                 </div>
 
-                <span class="badge">ANALYZED</span>
+                <span id="videoBadge" class="badge">RAW</span>
             </div>
 
+
+            <!-- Video Toggle -->
+            <div class="video-toggle">
+                <button id="rawBtn" class="toggle-btn active">
+                    RAW FOOTAGE
+                </button>
+
+                <button id="aiBtn" class="toggle-btn">
+                    AI DETECTION
+                </button>
+            </div>
+
+
+            <!-- Video -->
             <div class="video-container">
+
                 <video id="mainVideo" controls>
                     <source
-                        src="https://ovpvsooxntcmrzarvwie.supabase.co/storage/v1/object/public/VYUH-%20Assets/output_detected%20(8).mp4"
+                        src="test1.mp4"
                         type="video/mp4"
                     >
 
                     Your browser does not support video playback.
                 </video>
+
             </div>
 
         </section>
@@ -154,7 +170,11 @@
             ×
         </button>
 
-        <img id="lightboxImage" src="" alt="Detection snapshot">
+        <img
+            id="lightboxImage"
+            src=""
+            alt="Detection snapshot"
+        >
 
         <div id="lightboxCaption" class="lightbox-caption"></div>
 
