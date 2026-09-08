@@ -10,7 +10,7 @@ const SNAPSHOT_BASE_URL =
 // ------------------------------------------------------------
 
 const RAW_VIDEO_URL =
-    "test1.mp4";
+    "https://ovpvsooxntcmrzarvwie.supabase.co/storage/v1/object/public/VYUH-%20Assets/test1.mp4";
 
 const AI_VIDEO_URL =
     "https://ovpvsooxntcmrzarvwie.supabase.co/storage/v1/object/public/VYUH-%20Assets/output_detected%20(8).mp4";
